@@ -1,0 +1,14 @@
+{
+  "plugin.id": "ogui-rom-manager",
+  "plugin.name": "OGUI ROM Manager",
+  "plugin.version": "0.0.1",
+  "plugin.min-api-version": "1.0.0",
+  "plugin.link": "",
+  "plugin.source": "",
+  "plugin.description": "Add ROMs or Games to OGUI with custom launchers",
+  "store.tags": [],
+  "store.images": [],
+  "author.name": "DocMAX",
+  "author.email": "ogui@docmax.my.to",
+  "entrypoint": "plugin.gd"
+}

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnifc8w00oe6t"]
+
+[ext_resource type="Script" uid="uid://bq20c5721dahw" path="res://plugins/ogui-rom-manager/core/library.gd" id="1_qspgb"]
+
+[node name="Library" type="Node"]
+script = ExtResource("1_qspgb")
+library_id = "oguirm"
+metadata/_custom_type_script = "uid://c2iso5fxtppk7"

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcyy3j4o3ijik"]
+
+[ext_resource type="Script" uid="uid://cfhihnfdoawo0" path="res://plugins/ogui-rom-manager/core/tab_container.gd" id="2_knmwf"]
+[ext_resource type="PackedScene" uid="uid://c71ayw7pcw6u6" path="res://core/ui/components/card_button.tscn" id="3_sbyba"]
+
+[node name="MarginContainer" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="CardButton" parent="VBoxContainer" instance=ExtResource("3_sbyba")]
+layout_mode = 2
+text = "Add new parser"
+uppercase = false
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+script = ExtResource("2_knmwf")

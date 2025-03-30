@@ -1,10 +1,19 @@
 extends Library
 
+var tabs_state: TabContainerState
+
 func _ready() -> void:
 	super()
 	logger = Log.get_logger("OguiRomManager", Log.LEVEL.INFO)
 	library_id = "ogui-rom-manager"
 	logger.info("OguiRomManager Library loaded with library_id: " + library_id)
+	
+	# Load the TabContainerState
+	tabs_state = load("res://core/ui/card_ui/library/library_tabs_state.tres") as TabContainerState
+	if tabs_state:
+		# Wait a frame to ensure all menus are ready (Discord hint)
+		await get_tree().process_frame
+		_update_tabs()
 
 # Helper function to determine the depth and direction of ${title} in the glob
 func _get_title_depth(search_glob: String) -> Dictionary:
@@ -60,6 +69,50 @@ func _extract_title(file_path: String, depth: Dictionary, rom_dir: String) -> St
 	if title_parts.size() > 0:
 		return title_parts[0].strip_edges()
 	return raw_title
+
+# Update tabs based on parser names
+func _update_tabs() -> void:
+	var settings_manager = load("res://core/global/settings_manager.tres") as SettingsManager
+	var parser_count = settings_manager.get_value("plugin.oguirommanager", "parser_count", 0)
+	
+	# Get existing tabs
+	var existing_tabs = tabs_state.tabs_text.duplicate()
+	var parser_tabs = []
+	
+	# Collect parser names
+	for i in range(parser_count):
+		var section = "plugin.oguirommanager.parser_" + str(i)
+		var parser_name = settings_manager.get_value(section, "name", "Unnamed Parser")
+		if parser_name != "Installed" and parser_name != "All Games":
+			parser_tabs.append(parser_name)
+	
+	# Remove tabs that no longer exist
+	for tab in existing_tabs:
+		if tab != "Installed" and tab != "All Games" and tab not in parser_tabs:
+			tabs_state.remove_tab(tab)
+	
+	# Add new parser tabs
+	for parser_name in parser_tabs:
+		if parser_name not in existing_tabs:
+			var tab_node = ScrollContainer.new()
+			tab_node.name = parser_name
+			tab_node.horizontal_scroll_mode = 0
+			var margin = MarginContainer.new()
+			margin.add_theme_constant_override("margin_left", 15)
+			margin.add_theme_constant_override("margin_top", 100)
+			margin.add_theme_constant_override("margin_right", 15)
+			margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			var grid = HFlowContainer.new()
+			grid.name = parser_name + "Grid"
+			grid.add_theme_constant_override("h_separation", 26)
+			grid.add_theme_constant_override("v_separation", 16)
+			grid.alignment = HFlowContainer.ALIGNMENT_CENTER
+			grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			margin.add_child(grid)
+			tab_node.add_child(margin)
+			tabs_state.add_tab(parser_name, tab_node)
+			logger.debug("Added parser tab: " + parser_name)
 
 func get_library_launch_items() -> Array[LibraryLaunchItem]:
 	var items: Array[LibraryLaunchItem] = []

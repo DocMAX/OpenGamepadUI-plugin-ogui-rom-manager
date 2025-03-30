@@ -6,8 +6,9 @@ extends TabContainer
 @export var label_settings: LabelSettings = preload("res://assets/label/title_label.tres")
 
 var SettingsManager = load("res://core/global/settings_manager.tres") as SettingsManager
+var tabs_state: TabContainerState
 var parser_count = 0
-var is_loading = false  # Flag, um Ladevorgang zu markieren
+var is_loading = false  # Flag to mark loading process
 var logger = Log.get_logger("TabContainer", Log.LEVEL.INFO)
 
 func _ready():
@@ -15,6 +16,9 @@ func _ready():
 	var card_button = get_parent().get_node("CardButton")
 	if card_button:
 		card_button.connect("pressed", _on_add_parser_button_pressed)
+	
+	# Load the TabContainerState
+	tabs_state = load("res://core/ui/card_ui/library/library_tabs_state.tres") as TabContainerState
 	
 	# Load saved settings
 	is_loading = true
@@ -26,6 +30,7 @@ func _on_add_parser_button_pressed():
 	logger.info("Adding new parser tab")
 	add_parser_tab()
 	save_settings()
+	_update_tabs_state()
 
 func add_parser_tab():
 	logger.info("Creating parser tab #" + str(parser_count))
@@ -103,6 +108,7 @@ func _on_parser_name_changed(new_text: String, parser_tab: Node):
 	if parser_tab and parser_tab in get_children():
 		var tab_idx = parser_tab.get_index()
 		set_tab_title(tab_idx, new_text)
+		_update_tabs_state()
 
 func _on_add_directory_pressed(directories_container: VBoxContainer):
 	var file_dialog = FileDialog.new()
@@ -154,6 +160,7 @@ func _on_remove_parser_pressed(parser_tab: Node):
 	if parser_tab and parser_tab in get_children():
 		logger.info("Removing parser tab")
 		var tab_idx = parser_tab.get_index()
+		var tab_name = get_tab_title(tab_idx)
 		remove_child(parser_tab)
 		parser_tab.queue_free()
 		if parser_count > 0:
@@ -163,6 +170,21 @@ func _on_remove_parser_pressed(parser_tab: Node):
 		else:
 			current_tab = -1
 		save_settings()
+		_update_tabs_state()
+
+func _update_tabs_state():
+	if not tabs_state:
+		return
+	
+	# Update tabs_state with current parser names
+	var parser_names = []
+	for i in range(get_tab_count()):
+		var parser_name = get_tab_title(i)
+		if parser_name != "Installed" and parser_name != "All Games":
+			parser_names.append(parser_name)
+	
+	# This will trigger tab_added/tab_removed signals in library_menu.gd
+	tabs_state.tabs_text = ["Installed", "All Games"] + parser_names
 
 func save_settings():
 	if is_loading:
@@ -225,7 +247,7 @@ func load_settings():
 		
 		var parser_name_node = parser_tab.get_node("ParserNameInput")
 		if parser_name_node:
-			# Temporär Signale trennen, um save_settings() zu vermeiden
+			# Temporarily disconnect signals to avoid save_settings() during load
 			if parser_name_node.is_connected("text_changed", _on_parser_name_changed):
 				parser_name_node.disconnect("text_changed", _on_parser_name_changed)
 			parser_name_node.text = parser_name
@@ -248,3 +270,4 @@ func load_settings():
 	
 	self.parser_count = get_tab_count()
 	logger.info("Load completed: parser_count=" + str(self.parser_count) + ", tab_count=" + str(get_tab_count()))
+	_update_tabs_state()

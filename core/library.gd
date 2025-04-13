@@ -11,7 +11,7 @@ func _ready() -> void:
 	# Load the TabContainerState
 	tabs_state = load("res://core/ui/card_ui/library/library_tabs_state.tres") as TabContainerState
 	if tabs_state:
-		# Wait a frame to ensure all menus are ready (Discord hint)
+		# Wait a frame to ensure all menus are ready
 		await get_tree().process_frame
 		_update_tabs()
 
@@ -113,6 +113,9 @@ func _update_tabs() -> void:
 			tab_node.add_child(margin)
 			tabs_state.add_tab(parser_name, tab_node)
 			logger.debug("Added parser tab: " + parser_name)
+	
+	# Ensure the tab container is updated before proceeding
+	await get_tree().process_frame
 
 func get_library_launch_items() -> Array[LibraryLaunchItem]:
 	var items: Array[LibraryLaunchItem] = []

@@ -31,6 +31,10 @@ func _on_add_parser_button_pressed():
 	add_parser_tab()
 	save_settings()
 	_update_tabs_state()
+	# Wait longer to ensure the tab is added
+	await get_tree().create_timer(0.1).timeout
+	if tabs_state:
+		tabs_state.current_tab = get_tab_count() - 1
 
 func add_parser_tab():
 	logger.info("Creating parser tab #" + str(parser_count))
@@ -99,8 +103,6 @@ func add_parser_tab():
 	add_button.connect("pressed", _on_add_directory_pressed.bind(directories_container))
 	remove_button.connect("pressed", _on_remove_parser_pressed.bind(parser_tab))
 	
-	current_tab = tab_idx
-	
 	parser_count += 1
 	logger.info("Parser tab added, new parser_count=" + str(parser_count))
 
@@ -166,9 +168,13 @@ func _on_remove_parser_pressed(parser_tab: Node):
 		if parser_count > 0:
 			parser_count -= 1
 		if get_tab_count() > 0:
-			current_tab = clamp(current_tab, 0, get_tab_count() - 1)
+			# Ensure current_tab is valid
+			var new_tab = clamp(current_tab, 0, get_tab_count() - 1)
+			if tabs_state:
+				tabs_state.current_tab = new_tab
 		else:
-			current_tab = -1
+			if tabs_state:
+				tabs_state.current_tab = -1
 		save_settings()
 		_update_tabs_state()
 
@@ -271,3 +277,6 @@ func load_settings():
 	self.parser_count = get_tab_count()
 	logger.info("Load completed: parser_count=" + str(self.parser_count) + ", tab_count=" + str(get_tab_count()))
 	_update_tabs_state()
+	# Ensure current_tab is valid after loading
+	if tabs_state:
+		tabs_state.current_tab = clamp(tabs_state.current_tab, 0, get_tab_count() - 1)

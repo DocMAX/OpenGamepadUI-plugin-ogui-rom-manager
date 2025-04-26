@@ -71,10 +71,6 @@ func get_library_launch_items() -> Array[LibraryLaunchItem]:
 	var settings_manager = load("res://core/global/settings_manager.tres") as SettingsManager
 	var parser_count = settings_manager.get_value("plugin.oguirommanager", "parser_count", 0)
 
-	# Load tabs_state if not already loaded
-	if not tabs_state:
-		tabs_state = load("res://core/ui/card_ui/library/library_tabs_state.tres") as TabContainerState
-
 	for i in range(parser_count):
 		var section = "plugin.oguirommanager.parser_" + str(i)
 		var rom_dirs = settings_manager.get_value(section, "roms_dirs", [])

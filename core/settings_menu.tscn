@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dcyy3j4o3ijik"]
 
-[ext_resource type="Script" uid="uid://cfhihnfdoawo0" path="res://plugins/ogui-rom-manager/core/settings_menu.gd" id="2_knmwf"]
+[ext_resource type="Script" uid="uid://cfhihnfdoawo0" path="res://plugins/ogui-rom-manager/core/settings_menu.gd" id="1_ucwer"]
 [ext_resource type="PackedScene" uid="uid://c71ayw7pcw6u6" path="res://core/ui/components/card_button.tscn" id="3_sbyba"]
 
 [node name="MarginContainer" type="MarginContainer"]
@@ -23,7 +23,7 @@ uppercase = false
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
-script = ExtResource("2_knmwf")
+script = ExtResource("1_ucwer")
 
 [node name="SaveButton" parent="VBoxContainer" instance=ExtResource("3_sbyba")]
 layout_mode = 2

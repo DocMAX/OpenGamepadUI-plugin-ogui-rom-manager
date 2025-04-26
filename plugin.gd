@@ -2,7 +2,6 @@ extends Plugin
 
 var settings_menu := load("res://plugins/ogui-rom-manager/core/settings_menu.tscn") as PackedScene
 
-
 func _ready() -> void:
 	logger = Log.get_logger("OGUIRM-Plugin", Log.LEVEL.DEBUG)
 	var library: Library = load(plugin_base + "/core/library.tscn").instantiate()

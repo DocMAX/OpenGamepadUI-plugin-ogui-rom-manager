@@ -179,7 +179,9 @@ func _on_add_parser_button_pressed():
 func _populate_parser_grid(parser_tab: VBoxContainer, parser_name: String) -> void:
 	var library_manager = load("res://core/global/library_manager.tres") as LibraryManager
 	var card_scene := load("res://core/ui/components/card.tscn") as PackedScene
+	var tab_container = parser_tab.get_node("TabContainer") as TabContainer
 	var parser_grid = parser_tab.get_node("/root/CardUI/MenuContent/FullscreenMenus/LibraryMenu/TabContainer/" + parser_name + "/MarginContainer/ParserGrid") as HFlowContainer
+	#var parser_grid = parser_tab.get_node("TabContainer/" + parser_name + "/MarginContainer/ParserGrid") as HFlowContainer
 
 	# Filter library items by the parser name tag
 	var library_items := library_manager.get_library_items()

@@ -172,6 +172,26 @@ func _on_add_parser_button_pressed():
 	if tabs_state:
 		tabs_state.current_tab = get_tab_count() - 1
 
+	# Populate the ParserGrid with library items
+	call_deferred("_populate_parser_grid", parser_tab, default_name)
+
+
+func _populate_parser_grid(parser_tab: VBoxContainer, parser_name: String) -> void:
+	var library_manager = load("res://core/global/library_manager.tres") as LibraryManager
+	var card_scene := load("res://core/ui/components/card.tscn") as PackedScene
+	var parser_grid = parser_tab.get_node("/root/CardUI/MenuContent/FullscreenMenus/LibraryMenu/TabContainer/" + parser_name + "/MarginContainer/ParserGrid") as HFlowContainer
+
+	# Filter library items by the parser name tag
+	var library_items := library_manager.get_library_items()
+
+	# Create and add cards to the grid
+	for item in library_items:
+		if not parser_name in item.tags:
+			continue
+		var card = card_scene.instantiate() as GameCard
+		await card.set_library_item(item)
+		parser_grid.add_child(card)
+
 
 func _on_parser_name_changed(new_text: String, parser_tab: Node):
 	if parser_tab and parser_tab in get_children():
@@ -361,6 +381,9 @@ func load_settings():
 			
 			# Add the library tab for this parser
 			call_deferred("add_library_tab", parser_name)
+	
+			# Populate the ParserGrid with library items
+			call_deferred("_populate_parser_grid", parser_tab, parser_name)
 	
 	logger.info("Load completed: parser_count=" + str(parser_count) + ", tab_count=" + str(get_tab_count()))
 	_update_tabs_state()

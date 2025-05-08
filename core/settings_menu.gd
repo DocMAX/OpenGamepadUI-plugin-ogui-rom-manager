@@ -192,6 +192,13 @@ func _populate_parser_grid(parser_tab: VBoxContainer, parser_name: String) -> vo
 			continue
 		var card = card_scene.instantiate() as GameCard
 		await card.set_library_item(item)
+		var menu_state_machine := load("res://assets/state/state_machines/menu_state_machine.tres") as StateMachine
+		var launcher_state := load("res://assets/state/states/game_launcher.tres") as State
+		# Connect the button_up signal to launch the game
+		var on_button_up := func():
+			launcher_state.data = {"item": item}
+			menu_state_machine.push_state(launcher_state)
+		card.button_up.connect(on_button_up)
 		parser_grid.add_child(card)
 
 
